@@ -215,7 +215,7 @@ impl TaskContext {
     /// main Bevy [`World`], allowing it to update any resources or entities that it wants. The callback can
     /// report results back to the background thread by returning an output value, which will then be returned from
     /// this async function once the callback runs.
-    pub async fn run_on_main_thread<Runnable, Output>(&mut self, runnable: Runnable) -> Output
+    pub async fn run_on_main_thread<Runnable, Output>(&self, runnable: Runnable) -> Output
         where
             Runnable: FnOnce(MainThreadContext) -> Output + Send + 'static,
             Output: Send + 'static,
@@ -233,7 +233,7 @@ impl TaskContext {
             .expect("Failed to receive output from operation on main thread")
     }
 
-    pub fn dispatch_to_main_thread<Runnable>(&mut self, runnable: Runnable)
+    pub fn dispatch_to_main_thread<Runnable>(&self, runnable: Runnable)
         where
             Runnable: FnOnce(MainThreadContext) -> () + Send + 'static {
         self.update_run_tx.send(Box::new(runnable)).unwrap_or_else(|_| panic!("Failed to send operation to be run on main thread"));
